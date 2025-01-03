@@ -1,25 +1,30 @@
-// app/page.tsx
-import Navbar from './myComponents/Navbar';
-import client from '../sanity/lib/client';
-import Image from 'next/image';
-import Link from 'next/link';  // Import the Link component
+import { notFound } from 'next/navigation'; // To handle 404 page if post not found
+import client from '../sanity/lib/client'; // Import your client
+import Image from 'next/image'; // Import the Image component from next/image
+import Link from 'next/link'; // Import Link for navigation
 
-interface BlogPost {
+// Define the Block type
+interface Block {
+  children: { text: string }[];
+}
+
+// Define the Post type
+interface Post {
   _id: string;
   title: string;
-  slug: {
-    current: string;
-  };
-  content: { children: { text: string }[] }[];
+  slug: { current: string };
+  content: Block[];
   publishedAt: string;
   mainImage: {
     asset: {
+      _id: string;
       url: string;
     };
   };
 }
 
-const query = `*[_type == "blog"]{
+// Sanity query
+const query = `*[_type == "blog" && slug.current == $slug][0]{
   _id,
   title,
   slug,
@@ -33,60 +38,50 @@ const query = `*[_type == "blog"]{
   }
 }`;
 
-export default async function Home() {
-  const posts: BlogPost[] = await client.fetch(query);
+// Fetch the data directly in the component
+export default async function BlogPost({ params }: { params: { slug: string } }) {
+  const post: Post | null = await client.fetch(query, { slug: params.slug });
 
-  if (!posts || posts.length === 0) {
-    return (
-      <div>
-        <Navbar />
-        <main className="p-4">
-          <h1 className="text-4xl font-bold text-center mb-6">Welcome to My Blog</h1>
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold">No Blog Posts Available</h2>
-          </section>
-        </main>
-      </div>
-    );
+  // If no post is found, trigger 404
+  if (!post) {
+    notFound();
   }
 
   return (
-    <div>
-      <Navbar />
-      <main className="p-4">
-        <h1 className="text-4xl font-bold text-center mb-6">Welcome to My Blog</h1>
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold">Latest Blog Posts</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-            {posts.map((post) => (
-              <article key={post._id} className="border p-4 rounded-lg shadow-lg">
-                <Image
-                  src={post.mainImage?.asset?.url}
-                  alt={post.title}
-                  width={500}
-                  height={300}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <h3 className="text-xl font-semibold mt-4">{post.title}</h3>
-                <p className="mt-2">
-                  {/* Check if content exists and render the first block */}
-                  {post.content && post.content.length > 0 && post.content[0]?.children?.[0]?.text}
-                </p>
-                <Link
-                  href={`/blog/${post.slug.current}`}  // Use Link instead of <a>
-                  className="text-blue-500 mt-4 inline-block"
-                >
-                  Read more
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
-      </main>
+    <div className="max-w-3xl mx-auto p-6">
+      <h1 className="text-4xl font-bold text-center mb-4 text-gray-800">{post.title}</h1>
 
-      <footer className="bg-gray-800 text-white text-center p-4 mt-8">
-        <p>&copy; 2025 My Blog. All rights reserved.</p>
-      </footer>
+      {/* Main Image */}
+      <Image
+        src={post.mainImage?.asset?.url}
+        alt={post.title}
+        width={1200} // Provide a width for the image
+        height={800} // Provide a height for the image
+        className="w-full h-64 object-cover rounded-lg shadow-lg mb-6"
+      />
+
+      {/* Published Date */}
+      <div className="text-center text-gray-600 mb-6">
+        <p>Published on {new Date(post.publishedAt).toLocaleDateString()}</p>
+      </div>
+
+      {/* Blog Content */}
+      <div className="space-y-6">
+        {post.content?.map((block: Block, index: number) => (
+          <div key={index}>
+            <p className="text-lg text-gray-800">{block.children[0].text}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Back to Blog Link */}
+      <div className="text-center mt-8">
+        <Link href="/" passHref>
+          <a className="text-blue-500 hover:text-blue-700 text-lg font-semibold">
+            Back to Blog
+          </a>
+        </Link>
+      </div>
     </div>
   );
 }
