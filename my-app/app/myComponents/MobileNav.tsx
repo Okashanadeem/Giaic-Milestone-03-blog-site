@@ -1,62 +1,48 @@
 'use client'
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import Link from "next/link";
 
 export function MobileNavbar() {
-  const [name, setName] = useState("Pedro Duarte");
-  const [username, setUsername] = useState("@peduarte");
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open</Button>
+        <Button variant="outline" onClick={() => setIsOpen(!isOpen)}>
+          Menu
+        </Button>
       </SheetTrigger>
+
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
+          <SheetTitle>BlogSphere</SheetTitle>
           <SheetDescription>
-            Make changes to your profile here. Click save when you're done.
+            Navigate through the menu options below.
           </SheetDescription>
         </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
+
+        <div className={`flex flex-col space-y-4 ${isOpen ? "block" : "hidden"}`}>
+          <Link href="/" className="text-indigo-600 hover:text-indigo-800">
+            Home
+          </Link>
+          <Link href="/about" className="text-indigo-600 hover:text-indigo-800">
+            About
+          </Link>
+          <Link href="/blog" className="text-indigo-600 hover:text-indigo-800">
+            Blog
+          </Link>
+          <Link href="/contact" className="text-indigo-600 hover:text-indigo-800">
+            Contact
+          </Link>
         </div>
+
         <SheetFooter>
           <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit" className="mt-4 w-full bg-indigo-600 text-white hover:bg-indigo-700">
+              Subscribe
+            </Button>
           </SheetClose>
         </SheetFooter>
       </SheetContent>

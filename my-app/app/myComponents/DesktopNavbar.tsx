@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link"; // Import Link from next/link
 
 export default function DesktopNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -6,12 +7,10 @@ export default function DesktopNavbar() {
   return (
     <header className="bg-white shadow">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        <a
-          href="#"
-          className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
-        >
+        <Link href="/" className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
           <span className="text-2xl font-bold text-indigo-600">BlogSphere</span>
-        </a>
+        </Link>
+
         <button
           className="md:hidden ml-auto text-gray-600 focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
@@ -31,24 +30,18 @@ export default function DesktopNavbar() {
             />
           </svg>
         </button>
+
         <nav
           className={`${
             isOpen ? "block" : "hidden"
           } md:flex md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center`}
         >
-          <a href="#" className="mr-5 hover:text-indigo-600">
-            Home
-          </a>
-          <a href="#" className="mr-5 hover:text-indigo-600">
-            About
-          </a>
-          <a href="#" className="mr-5 hover:text-indigo-600">
-            Blog
-          </a>
-          <a href="#" className="mr-5 hover:text-indigo-600">
-            Contact
-          </a>
+          <Link href="/" className="mr-5 hover:text-indigo-600">Home</Link>
+          <Link href="/about" className="mr-5 hover:text-indigo-600">About</Link>
+          <Link href="/blog" className="mr-5 hover:text-indigo-600">Blog</Link>
+          <Link href="/contact" className="mr-5 hover:text-indigo-600">Contact</Link>
         </nav>
+
         <button className="hidden md:inline-flex items-center bg-indigo-600 text-white border-0 py-1 px-4 focus:outline-none hover:bg-indigo-700 rounded text-base mt-4 md:mt-0">
           Subscribe
           <svg

@@ -1,7 +1,6 @@
 // app/blog/[slug]/page.tsx
-'use client'
-import { useParams } from 'next/navigation'; // Use next/navigation
-import client from '../../../sanity/lib/client';
+import { notFound } from 'next/navigation'; // To handle 404 page if post not found
+import client from '../../../sanity/lib/client'; // Import your client
 
 const query = `*[_type == "blog" && slug.current == $slug][0]{
   _id,
@@ -17,14 +16,13 @@ const query = `*[_type == "blog" && slug.current == $slug][0]{
   }
 }`;
 
-export default async function BlogPost() {
-  const { slug } = useParams(); // Access slug parameter from the URL
+export default async function BlogPost({ params }: { params: { slug: string } }) {
+  // Fetch data from Sanity based on the slug parameter
+  const post = await client.fetch(query, { slug: params.slug });
 
-  // Fetch data from Sanity inside the component
-  const post = await client.fetch(query, { slug });
-
+  // If no post is found, show 404
   if (!post) {
-    return <div className="text-center py-6 text-xl">Post not found.</div>;
+    notFound(); // This automatically triggers the 404 page in Next.js
   }
 
   return (
