@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'; // To handle 404 page if post not fo
 import client from '../../../sanity/lib/client'; // Import your client
 import Image from 'next/image'; // Import the Image component from next/image
 import Link from 'next/link'; // Import Link for navigation
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps } from 'next'; // For server-side fetching
 
 // Define the Block type
 interface Block {
@@ -40,8 +40,12 @@ const query = `*[_type == "blog" && slug.current == $slug][0]{
 }`;
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  // Fetch the post based on the slug
-  const post: Post | null = await client.fetch(query, { slug: params?.slug });
+  // Ensure params.slug exists before querying
+  if (!params?.slug) {
+    return { notFound: true }; // Trigger a 404 if no slug
+  }
+
+  const post: Post | null = await client.fetch(query, { slug: params.slug });
 
   // If no post is found, return 404
   if (!post) {
