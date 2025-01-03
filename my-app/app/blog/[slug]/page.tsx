@@ -2,12 +2,29 @@ import { notFound } from 'next/navigation'; // To handle 404 page if post not fo
 import client from '../../../sanity/lib/client'; // Import your client
 import Image from 'next/image'; // Import the Image component from next/image
 import Link from 'next/link'; // Import Link for navigation
+import { GetServerSideProps } from 'next';
 
 // Define the Block type
 interface Block {
   children: { text: string }[];
 }
 
+// Define the Post type
+interface Post {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  content: Block[];
+  publishedAt: string;
+  mainImage: {
+    asset: {
+      _id: string;
+      url: string;
+    };
+  };
+}
+
+// Sanity query
 const query = `*[_type == "blog" && slug.current == $slug][0]{
   _id,
   title,
@@ -22,15 +39,19 @@ const query = `*[_type == "blog" && slug.current == $slug][0]{
   }
 }`;
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
-  // Fetch data from Sanity based on the slug parameter
-  const post = await client.fetch(query, { slug: params.slug });
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  // Fetch the post based on the slug
+  const post: Post | null = await client.fetch(query, { slug: params?.slug });
 
-  // If no post is found, show 404
+  // If no post is found, return 404
   if (!post) {
-    notFound(); // This automatically triggers the 404 page in Next.js
+    return { notFound: true }; // This automatically triggers the 404 page in Next.js
   }
 
+  return { props: { post } };
+};
+
+export default function BlogPost({ post }: { post: Post }) {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-4xl font-bold text-center mb-4 text-gray-800">{post.title}</h1>
