@@ -1,5 +1,4 @@
 'use client'
-import React, { useState } from 'react'
 import { MobileNavbar} from './MobileNav'
 import DesktopNavbar from './DesktopNavbar';
 
