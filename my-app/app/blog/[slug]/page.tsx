@@ -11,9 +11,9 @@ interface BlogPost {
   author: { name: string };
 }
 
-// Fetch blog post data by slug
-async function fetchBlogBySlug(slug: string): Promise<BlogPost | null> {
-  const query = `*[_type == "blog" && slug.current == $slug][0] {
+// Fetch blog post data (you can adjust the query to get a specific blog post)
+async function fetchBlogPost(): Promise<BlogPost | null> {
+  const query = `*[_type == "blog"][0] {  // Fetch the first blog post
     _id,
     title,
     mainImage {
@@ -27,17 +27,12 @@ async function fetchBlogBySlug(slug: string): Promise<BlogPost | null> {
       name
     }
   }`;
-  const blog = await client.fetch(query, { slug });
+  const blog = await client.fetch(query);
   return blog || null;
 }
 
-// Define type for the dynamic route params
-interface BlogPostPageProps {
-  params: { slug: string };
-}
-
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const blog = await fetchBlogBySlug(params.slug);
+export default async function BlogPostPage() {
+  const blog = await fetchBlogPost();
 
   if (!blog) {
     return notFound();

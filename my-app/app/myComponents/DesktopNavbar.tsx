@@ -37,9 +37,9 @@ export default function DesktopNavbar() {
           } md:flex md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center`}
         >
           <Link href="/" className="mr-5 hover:text-indigo-600">Home</Link>
-          <Link href="/about" className="mr-5 hover:text-indigo-600">About</Link>
-          <Link href="/blog" className="mr-5 hover:text-indigo-600">Blog</Link>
-          <Link href="/contact" className="mr-5 hover:text-indigo-600">Contact</Link>
+          <Link href="#" className="mr-5 hover:text-indigo-600">About</Link>
+          <Link href="#" className="mr-5 hover:text-indigo-600">Blog</Link>
+          <Link href="#" className="mr-5 hover:text-indigo-600">Contact</Link>
         </nav>
 
         <button className="hidden md:inline-flex items-center bg-indigo-600 text-white border-0 py-1 px-4 focus:outline-none hover:bg-indigo-700 rounded text-base mt-4 md:mt-0">
