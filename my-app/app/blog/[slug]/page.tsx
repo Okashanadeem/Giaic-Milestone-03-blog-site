@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import client from '../../../sanity/lib/client'; // Adjust the path if necessary
+import client from '../../../sanity/lib/client';
 
 interface BlogPost {
   _id: string;
@@ -11,7 +11,7 @@ interface BlogPost {
   author: { name: string };
 }
 
-// Fetch blog post data (you can adjust the query to get a specific blog post)
+// Fetch blog post data 
 async function fetchBlogPost(): Promise<BlogPost | null> {
   const query = `*[_type == "blog"][0] {  // Fetch the first blog post
     _id,
@@ -41,7 +41,6 @@ export default async function BlogPostPage() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-16">
-        {/* Title and Meta */}
         <h1 className="text-4xl font-bold text-gray-800 mb-4">{blog.title}</h1>
         <div className="text-gray-600 mb-6">
           <p>

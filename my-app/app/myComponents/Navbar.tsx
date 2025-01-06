@@ -16,7 +16,6 @@ const Navbar = () => {
             <DesktopNavbar/>
             </div>
         </div>
-        
         </div>
     )
 }

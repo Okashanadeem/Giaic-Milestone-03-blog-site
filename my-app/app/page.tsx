@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import client from '../sanity/lib/client'; // Ensure this path matches your setup
+import client from '../sanity/lib/client'; 
 
 interface Blog {
   _id: string;

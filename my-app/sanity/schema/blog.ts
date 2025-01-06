@@ -1,5 +1,3 @@
-// sanity/schemas/blog.ts
-
 export default {
   name: 'blog',
   title: 'Blog',
