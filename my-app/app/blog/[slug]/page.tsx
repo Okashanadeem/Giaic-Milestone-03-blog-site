@@ -1,86 +1,80 @@
-import { notFound } from 'next/navigation'; // To handle 404 page if post not found
-import client from '../../../sanity/lib/client'; // Import your client
-import Image from 'next/image'; // Import the Image component from next/image
-import Link from 'next/link'; // Import Link for navigation
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import client from '../../../sanity/lib/client'; // Adjust the path if necessary
 
-// Define the Block type
-interface Block {
-  children: { text: string }[];
-}
-
-// Define the Post type
-interface Post {
+interface BlogPost {
   _id: string;
   title: string;
-  slug: { current: string };
-  content: Block[];
+  mainImage: { asset: { url: string } };
+  content: Array<{ children: Array<{ text: string }> }>;
   publishedAt: string;
-  mainImage: {
-    asset: {
-      _id: string;
-      url: string;
-    };
-  };
+  author: { name: string };
 }
 
-// Sanity query
-const query = `*[_type == "blog" && slug.current == $slug][0]{
-  _id,
-  title,
-  slug,
-  content,
-  publishedAt,
-  mainImage {
-    asset -> {
-      _id,
-      url
+// Fetch blog post data by slug
+async function fetchBlogBySlug(slug: string): Promise<BlogPost | null> {
+  const query = `*[_type == "blog" && slug.current == $slug][0] {
+    _id,
+    title,
+    mainImage {
+      asset -> {
+        url
+      }
+    },
+    content,
+    publishedAt,
+    author -> {
+      name
     }
-  }
-}`;
+  }`;
+  const blog = await client.fetch(query, { slug });
+  return blog || null;
+}
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
-  // Fetch the post data based on the slug
-  const post: Post | null = await client.fetch(query, { slug: params.slug });
+export default async function BlogPostPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const blog = await fetchBlogBySlug(params.slug);
 
-  // If no post is found, trigger 404
-  if (!post) {
-    notFound();
+  if (!blog) {
+    return notFound();
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-4xl font-bold text-center mb-4 text-gray-800">{post.title}</h1>
+    <div className="bg-gray-100 min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        {/* Title and Meta */}
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">{blog.title}</h1>
+        <div className="text-gray-600 mb-6">
+          <p>
+            By <span className="font-semibold">{blog.author.name}</span> |{' '}
+            {new Date(blog.publishedAt).toLocaleDateString()}
+          </p>
+        </div>
 
-      {/* Main Image */}
-      <Image
-        src={post.mainImage?.asset?.url}
-        alt={post.title}
-        width={1200} // Provide a width for the image
-        height={800} // Provide a height for the image
-        className="w-full h-64 object-cover rounded-lg shadow-lg mb-6"
-      />
+        {/* Main Image */}
+        <div className="mb-8">
+          <Image
+            src={blog.mainImage.asset.url}
+            alt={blog.title}
+            width={800}
+            height={400}
+            className="w-full rounded-lg shadow-md object-cover"
+          />
+        </div>
 
-      {/* Published Date */}
-      <div className="text-center text-gray-600 mb-6">
-        <p>Published on {new Date(post.publishedAt).toLocaleDateString()}</p>
-      </div>
-
-      {/* Blog Content */}
-      <div className="space-y-6">
-        {post.content?.map((block: Block, index: number) => (
-          <div key={index}>
-            <p className="text-lg text-gray-800">{block.children[0].text}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Back to Blog Link */}
-      <div className="text-center mt-8">
-        <Link href="/" passHref>
-          <a className="text-blue-500 hover:text-blue-700 text-lg font-semibold">
-            Back to Blog
-          </a>
-        </Link>
+        {/* Blog Content */}
+        <div className="prose max-w-none">
+          {blog.content?.map((block, index) => (
+            <p key={index}>
+              {block.children?.map((child, i) => (
+                <span key={i}>{child.text}</span>
+              ))}
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );
