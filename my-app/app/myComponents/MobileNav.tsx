@@ -27,7 +27,7 @@ export function MobileNavbar() {
           <Link href="/" className="text-indigo-600 hover:text-indigo-800">
             Home
           </Link>
-          <Link href="/about" className="text-indigo-600 hover:text-indigo-800">
+          <Link href="#" className="text-indigo-600 hover:text-indigo-800">
             About
           </Link>
           <Link href="/blog" className="text-indigo-600 hover:text-indigo-800">

@@ -31,11 +31,12 @@ async function fetchBlogBySlug(slug: string): Promise<BlogPost | null> {
   return blog || null;
 }
 
-export default async function BlogPostPage({
-  params,
-}: {
+// Define type for the dynamic route params
+interface BlogPostPageProps {
   params: { slug: string };
-}) {
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const blog = await fetchBlogBySlug(params.slug);
 
   if (!blog) {
